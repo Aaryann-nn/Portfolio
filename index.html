@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aaryan Kewalia — Visual Storyteller</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=DM+Mono:wght@300;400&family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --ink: #080806;
+  --paper: #f0ece4;
+  --accent: #c8a96e;
+  --muted: #5a5550;
+  --card: #111110;
+  --radius: 16px;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--ink);
+  color: var(--paper);
+  font-family: 'DM Sans', sans-serif;
+  overflow-x: hidden;
+  cursor: none;
+}
+
+/* NOISE */
+body::after {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+  pointer-events: none; z-index: 9000; opacity: 0.5;
+}
+
+/* CURSOR */
+.cursor {
+  width: 8px; height: 8px;
+  background: var(--accent);
+  border-radius: 50%;
+  position: fixed; top: 0; left: 0;
+  pointer-events: none; z-index: 9999;
+  transform: translate(-50%,-50%);
+  transition: width .25s, height .25s;
+  mix-blend-mode: screen;
+}
+.cursor-ring {
+  width: 32px; height: 32px;
+  border: 1px solid rgba(200,169,110,.4);
+  border-radius: 50%;
+  position: fixed; top: 0; left: 0;
+  pointer-events: none; z-index: 9998;
+  transform: translate(-50%,-50%);
+  transition: transform .4s cubic-bezier(.16,1,.3,1), width .4s, height .4s;
+}
+
+/* NAV */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 500;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1.4rem 3.5rem;
+  background: linear-gradient(to bottom, rgba(8,8,6,.95), transparent);
+  backdrop-filter: blur(2px);
+}
+.nav-logo {
+  font-family: 'Bebas Neue', cursive;
+  font-size: 1.3rem;
+  letter-spacing: .18em;
+  color: var(--paper);
+  text-decoration: none;
+}
+.nav-links { display: flex; gap: 2.5rem; list-style: none; }
+.nav-links a {
+  font-family: 'DM Mono', monospace;
+  font-size: .68rem;
+  letter-spacing: .14em;
+  color: var(--muted);
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: color .3s;
+}
+.nav-links a:hover { color: var(--accent); }
+
+/* ========================
+   HERO
+   ======================== */
+.hero {
+  height: 100vh;
+  max-height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  padding: 0;
+  position: relative;
+  overflow: hidden;
+  background: var(--ink);
+}
+
+.hero-content {
+  position: relative; z-index: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 8rem 4rem 5rem 3.5rem;
+  background: var(--ink);
+}
+
+.hero-photo-col {
+  position: relative;
+  overflow: hidden;
+  background: var(--card);
+  height: 100vh;
+}
+.hero-photo-col img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  object-position: center 20%;
+  filter: grayscale(10%) contrast(1.08);
+  opacity: .92;
+  transition: transform 1.2s ease;
+}
+.hero-photo-col:hover img { transform: scale(1.03); }
+
+.hero-eyebrow {
+  font-family: 'DM Mono', monospace;
+  font-size: .68rem;
+  letter-spacing: .3em;
+  color: var(--accent);
+  text-transform: uppercase;
+  margin-bottom: 1.2rem;
+  opacity: 0;
+  animation: fadeUp 1s .2s forwards;
+}
+
+.hero-name {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(4.5rem, 9vw, 8.5rem);
+  font-weight: 900;
+  line-height: .88;
+  color: var(--paper);
+  margin-bottom: 1.8rem;
+  opacity: 0;
+  animation: fadeUp 1s .4s forwards;
+}
+.hero-name em {
+  display: block;
+  font-style: italic;
+  color: var(--accent);
+  font-size: .58em;
+}
+
+.hero-tagline {
+  font-size: .95rem;
+  font-weight: 300;
+  color: var(--muted);
+  line-height: 1.8;
+  max-width: 420px;
+  margin-bottom: 2.5rem;
+  opacity: 0;
+  animation: fadeUp 1s .6s forwards;
+}
+
+.hero-cta {
+  display: flex; gap: 1.5rem; align-items: center;
+  opacity: 0;
+  animation: fadeUp 1s .8s forwards;
+}
+.btn-primary {
+  padding: .85rem 2.5rem;
+  background: var(--accent);
+  color: var(--ink);
+  font-family: 'DM Mono', monospace;
+  font-size: .7rem;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: transform .3s, box-shadow .3s;
+  display: inline-block;
+}
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(200,169,110,.3); }
+
+.btn-ghost {
+  font-family: 'DM Mono', monospace;
+  font-size: .7rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-decoration: none;
+  display: inline-flex; align-items: center; gap: .4rem;
+  transition: color .3s;
+}
+.btn-ghost::after { content: '↓'; font-size: .9rem; }
+.btn-ghost:hover { color: var(--paper); }
+
+/* ========================
+   FILM TICKER
+   ======================== */
+.ticker {
+  border-top: 1px solid rgba(200,169,110,.12);
+  border-bottom: 1px solid rgba(200,169,110,.12);
+  padding: .9rem 0;
+  overflow: hidden;
+  margin: 3.5rem 0;
+}
+.ticker-inner {
+  display: flex; gap: 0; white-space: nowrap;
+  animation: tickerMove 35s linear infinite;
+}
+.ticker-item {
+  font-family: 'Bebas Neue', cursive;
+  font-size: .75rem;
+  letter-spacing: .5em;
+  color: rgba(200,169,110,.18);
+  padding: 0 2.5rem;
+}
+@keyframes tickerMove { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+/* ========================
+   SECTION LABEL
+   ======================== */
+.sec-label {
+  padding: 5.5rem 3.5rem 2.5rem;
+  display: flex; justify-content: space-between; align-items: flex-end;
+}
+.sec-label-left {}
+.sec-num {
+  font-family: 'DM Mono', monospace;
+  font-size: .65rem;
+  letter-spacing: .25em;
+  color: var(--accent);
+  text-transform: uppercase;
+  margin-bottom: .5rem;
+  display: block;
+}
+.sec-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(3rem, 6vw, 5.5rem);
+  font-weight: 900;
+  line-height: .9;
+  color: var(--paper);
+  letter-spacing: -.01em;
+}
+.sec-title em { font-style: italic; color: var(--accent); }
+.sec-year {
+  font-family: 'DM Mono', monospace;
+  font-size: .62rem;
+  letter-spacing: .18em;
+  color: var(--muted);
+  text-transform: uppercase;
+  text-align: right;
+  padding-bottom: .3rem;
+}
+
+/* ========================
+   ABOUT
+   ======================== */
+.about-wrap {
+  display: grid;
+  grid-template-columns: 1fr 1.4fr;
+  gap: 0;
+  padding: 0 3.5rem 6rem;
+  align-items: start;
+}
+.about-photo-box {
+  aspect-ratio: 2/3;
+  overflow: hidden;
+  border-radius: var(--radius);
+  background: var(--card);
+  position: relative;
+}
+.about-photo-box img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  filter: contrast(1.05);
+  transition: transform .7s ease;
+}
+.about-photo-box:hover img { transform: scale(1.04); }
+.about-photo-box::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(to bottom, transparent 60%, rgba(8,8,6,.5));
+  border-radius: var(--radius);
+  pointer-events: none;
+}
+
+.about-text {
+  padding: 2rem 0 0 4rem;
+}
+.about-tag {
+  font-family: 'DM Mono', monospace;
+  font-size: .65rem;
+  letter-spacing: .3em;
+  color: var(--accent);
+  text-transform: uppercase;
+  display: block;
+  margin-bottom: 1.5rem;
+}
+.about-heading {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(3rem, 5vw, 5rem);
+  font-weight: 900;
+  line-height: .9;
+  color: var(--paper);
+  margin-bottom: 2rem;
+}
+.about-heading em { font-style: italic; color: var(--accent); }
+.about-body {
+  font-size: .98rem;
+  font-weight: 300;
+  line-height: 1.95;
+  color: rgba(240,236,228,.55);
+  margin-bottom: 2.5rem;
+}
+.about-stats {
+  display: flex; gap: 2.5rem;
+  border-top: 1px solid rgba(200,169,110,.15);
+  padding-top: 2rem;
+}
+.stat-num {
+  font-family: 'Playfair Display', serif;
+  font-size: 2.2rem;
+  font-weight: 900;
+  color: var(--accent);
+  line-height: 1;
+}
+.stat-label {
+  font-family: 'DM Mono', monospace;
+  font-size: .6rem;
+  letter-spacing: .15em;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin-top: .4rem;
+}
+
+/* ========================
+   IMAGE CARDS
+   ======================== */
+.gal-wrap { padding: 0 3.5rem; }
+
+.img-card {
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--card);
+  position: relative;
+}
+.img-card img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform .7s cubic-bezier(.16,1,.3,1), filter .5s;
+  filter: grayscale(12%) contrast(1.08);
+}
+.img-card:hover img {
+  transform: scale(1.05);
+  filter: grayscale(0%) contrast(1.15);
+}
+.img-cap {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  padding: 2rem 1rem .9rem;
+  background: linear-gradient(transparent, rgba(0,0,0,.8));
+  font-family: 'DM Mono', monospace;
+  font-size: .58rem;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: rgba(240,236,228,.65);
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity .35s, transform .35s;
+  border-radius: 0 0 var(--radius) var(--radius);
+}
+.img-card:hover .img-cap { opacity: 1; transform: translateY(0); }
+
+/* sub section divider */
+.sub-sec {
+  padding: 3.5rem 3.5rem 1.5rem;
+  border-top: 1px solid rgba(200,169,110,.08);
+  margin-top: 2rem;
+}
+.sub-sec-label {
+  font-family: 'DM Mono', monospace;
+  font-size: .62rem;
+  letter-spacing: .25em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: .5rem;
+  display: block;
+}
+.sub-sec-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(1.8rem, 3vw, 2.8rem);
+  font-weight: 700;
+  font-style: italic;
+  color: var(--paper);
+  letter-spacing: -.01em;
+}
+
+/* ========================
+   LIVE EVENTS LAYOUTS
+   ======================== */
+/* Street Portraits top row — tall 3-col so full portrait shows */
+.row-portraits-top {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 5px;
+  margin-bottom: 5px;
+}
+.row-portraits-top .img-card { aspect-ratio: 2/3; }
+
+/* Satinder Sartaj: wide + portrait */
+.row-wide-port {
+  display: grid;
+  grid-template-columns: 1.65fr 1fr;
+  gap: 5px;
+  margin-bottom: 5px;
+}
+.row-wide-port .left { aspect-ratio: 16/10; }
+.row-wide-port .right { aspect-ratio: 2/3; }
+
+/* 3 portrait strip */
+.row-trio {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 5px;
+  margin-bottom: 5px;
+}
+.row-trio .img-card { aspect-ratio: 3/4; }
+
+/* Abhidaan: landscape + portrait */
+.row-land-port {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 5px;
+  margin-bottom: 5px;
+}
+.row-land-port .left { aspect-ratio: 16/10; }
+.row-land-port .right { aspect-ratio: 2/3; }
+
+/* ========================
+   STREET STORIES LAYOUTS
+   ======================== */
+/* intro: text + portrait */
+.row-text-port {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5px;
+  margin-bottom: 5px;
+  align-items: stretch;
+}
+.row-text-port .text-side {
+  display: flex; flex-direction: column; justify-content: flex-end;
+  padding: 2rem;
+  background: rgba(200,169,110,.04);
+  border-radius: var(--radius);
+  border: 1px solid rgba(200,169,110,.08);
+}
+.row-text-port .text-side p {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(1.2rem, 2vw, 1.8rem);
+  font-style: italic;
+  font-weight: 400;
+  line-height: 1.55;
+  color: rgba(240,236,228,.45);
+}
+.row-text-port .img-card { aspect-ratio: 3/4; }
+
+/* pair */
+.row-pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5px;
+  margin-bottom: 5px;
+}
+.row-pair .img-card { aspect-ratio: 3/4; }
+
+/* ========================
+   WIDE CINEMATIC BANNER
+   ======================== */
+.cinematic-banner {
+  width: 100%;
+  aspect-ratio: 21/8;
+  overflow: hidden;
+  position: relative;
+  background: var(--card);
+}
+.cinematic-banner img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  object-position: center 40%;
+  filter: grayscale(8%) contrast(1.12);
+  transition: transform 1s ease, filter .6s;
+}
+.cinematic-banner:hover img { transform: scale(1.03); filter: grayscale(0%); }
+.cinematic-cap {
+  position: absolute; bottom: 1.2rem; left: 1.5rem;
+  font-family: 'DM Mono', monospace;
+  font-size: .58rem;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: rgba(240,236,228,.5);
+}
+
+/* ========================
+   CONTACT
+   ======================== */
+.contact-wrap {
+  padding: 5.5rem 3.5rem 2rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5rem;
+  align-items: center;
+}
+.contact-heading-block .sec-num { margin-bottom: 1rem; }
+
+.contact-links { margin-top: 2.5rem; display: flex; flex-direction: column; gap: .8rem; }
+.c-link {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1.1rem 1.4rem;
+  border: 1px solid rgba(200,169,110,.12);
+  border-radius: 10px;
+  text-decoration: none;
+  color: var(--paper);
+  position: relative; overflow: hidden;
+  transition: border-color .3s;
+}
+.c-link::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: rgba(200,169,110,.06);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform .4s cubic-bezier(.16,1,.3,1);
+}
+.c-link:hover { border-color: rgba(200,169,110,.3); }
+.c-link:hover::before { transform: scaleX(1); }
+.cl-meta { position: relative; z-index: 1; }
+.cl-lbl {
+  font-family: 'DM Mono', monospace;
+  font-size: .58rem;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: .3rem;
+}
+.cl-val {
+  font-size: .9rem;
+  font-weight: 300;
+  color: var(--paper);
+}
+.cl-arr {
+  font-size: 1.1rem;
+  color: var(--accent);
+  position: relative; z-index: 1;
+  transition: transform .3s;
+}
+.c-link:hover .cl-arr { transform: translateX(4px); }
+
+.contact-big {
+  font-family: 'Bebas Neue', cursive;
+  font-size: clamp(4rem, 9vw, 9rem);
+  letter-spacing: .02em;
+  line-height: .88;
+  color: var(--paper);
+}
+.contact-big span {
+  display: block;
+  -webkit-text-stroke: 1.5px rgba(200,169,110,.25);
+  color: transparent;
+}
+
+/* FOOTER */
+footer {
+  padding: 1.8rem 3.5rem;
+  display: flex; align-items: center; justify-content: space-between;
+  border-top: 1px solid rgba(200,169,110,.08);
+  margin-top: 3rem;
+}
+footer p {
+  font-family: 'DM Mono', monospace;
+  font-size: .6rem;
+  letter-spacing: .15em;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+
+/* ANIMATIONS */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(28px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; } to { opacity: 1; }
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(36px);
+  transition: opacity .9s cubic-bezier(.16,1,.3,1), transform .9s cubic-bezier(.16,1,.3,1);
+}
+.reveal.visible { opacity: 1; transform: translateY(0); }
+.rd1 { transition-delay: .1s; }
+.rd2 { transition-delay: .22s; }
+.rd3 { transition-delay: .34s; }
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+  nav { padding: 1rem 1.5rem; }
+  .nav-links { display: none; }
+  .hero { grid-template-columns: 1fr; }
+  .hero-photo-col { min-height: 50vh; }
+  .hero-content { padding: 8rem 1.5rem 4rem; }
+  .about-wrap { grid-template-columns: 1fr; padding: 0 1.5rem 4rem; }
+  .about-text { padding: 2rem 0 0; }
+  .sec-label, .gal-wrap, .sub-sec, .contact-wrap { padding-left: 1.5rem; padding-right: 1.5rem; }
+  .row-wide-port, .row-land-port, .row-text-port, .row-pair { grid-template-columns: 1fr; }
+  .row-wide-port .right, .row-land-port .right { aspect-ratio: 4/3; }
+  .row-trio { grid-template-columns: 1fr 1fr; }
+  .contact-wrap { grid-template-columns: 1fr; gap: 3rem; }
+  .cinematic-banner { aspect-ratio: 16/9; }
+}
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursor-ring"></div>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">AK</a>
+  <ul class="nav-links">
+    <li><a href="#live-events">Live Events</a></li>
+    <li><a href="#street">Street Stories</a></li>
+    <li><a href="#portraits">Portraits</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- ===================== HERO ===================== -->
+<section class="hero">
+  <div class="hero-content">
+    <p class="hero-eyebrow">Visual Storyteller · Ahmedabad</p>
+    <h1 class="hero-name">Aaryan<br><em>Kewalia</em></h1>
+    <p class="hero-tagline">No filters. No edits. Just what was there — the raw energy of a crowd, the quiet weight of a street, the split second that says everything.</p>
+    <div class="hero-cta">
+      <a href="#live-events" class="btn-primary">View Work</a>
+      <a href="#about" class="btn-ghost">About me</a>
+    </div>
+  </div>
+  <div class="hero-photo-col">
+    <img src="DSC08731.JPG" alt="Aaryan Kewalia — Visual Storyteller">
+  </div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker">
+  <div class="ticker-inner">
+    <span class="ticker-item">Live Events</span><span class="ticker-item">·</span>
+    <span class="ticker-item">Street Stories</span><span class="ticker-item">·</span>
+    <span class="ticker-item">Portraits</span><span class="ticker-item">·</span>
+    <span class="ticker-item">Music Photography</span><span class="ticker-item">·</span>
+    <span class="ticker-item">Ahmedabad</span><span class="ticker-item">·</span>
+    <span class="ticker-item">No Filters</span><span class="ticker-item">·</span>
+    <span class="ticker-item">No Edits</span><span class="ticker-item">·</span>
+    <span class="ticker-item">Live Events</span><span class="ticker-item">·</span>
+    <span class="ticker-item">Street Stories</span><span class="ticker-item">·</span>
+    <span class="ticker-item">Portraits</span><span class="ticker-item">·</span>
+    <span class="ticker-item">Music Photography</span><span class="ticker-item">·</span>
+    <span class="ticker-item">Ahmedabad</span><span class="ticker-item">·</span>
+    <span class="ticker-item">No Filters</span><span class="ticker-item">·</span>
+    <span class="ticker-item">No Edits</span><span class="ticker-item">·</span>
+  </div>
+</div>
+
+<!-- ===================== ABOUT ===================== -->
+<div class="sec-label reveal" id="about">
+  <div class="sec-label-left">
+    <span class="sec-num">01 — About</span>
+    <h2 class="sec-title">Behind<br>the <em>lens</em></h2>
+  </div>
+</div>
+
+<div class="about-wrap reveal rd1">
+  <div class="about-photo-box">
+    <img src="IMG_8219.JPG.jpg" alt="Aaryan Kewalia">
+  </div>
+  <div class="about-text">
+    <span class="about-tag">Aaryan Kewalia</span>
+    <h3 class="about-heading">Photographer<br>& <em>Storyteller</em></h3>
+    <p class="about-body">
+      I'm Aaryan Kewalia, a photographer and visual storyteller based in Ahmedabad. Through my lens, I document live performances, everyday life, and the people who shape the stories around us.<br><br>
+      My work is driven by a curiosity for authentic moments — whether it's the energy of a concert stage, the character of a city street, or a fleeting human expression. As a Journalism and Mass Communication student, I believe photography is more than creating images.
+    </p>
+    <div class="about-stats">
+      <div class="stat"><div class="stat-num">8+</div><div class="stat-label">Events Shot</div></div>
+      <div class="stat"><div class="stat-num">0</div><div class="stat-label">Filters Used</div></div>
+      <div class="stat"><div class="stat-num">∞</div><div class="stat-label">Stories Told</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== LIVE EVENTS ===================== -->
+<div class="sec-label reveal" id="live-events">
+  <div class="sec-label-left">
+    <span class="sec-num">02 — Work</span>
+    <h2 class="sec-title">Live Events<br>& <em>Music</em></h2>
+  </div>
+  <div class="sec-year">Satinder Sartaj · Abhidaan · Janshit Joshi · 2026</div>
+</div>
+
+<!-- Satinder Sartaj -->
+<div class="sub-sec reveal">
+  <span class="sub-sec-label">2026 — Satinder Sartaj Concert, Ahmedabad</span>
+  <h3 class="sub-sec-title">Satinder Sartaj</h3>
+</div>
+<div class="gal-wrap">
+  <!-- Wide stage + performer portrait -->
+  <div class="row-wide-port reveal">
+    <div class="img-card left">
+      <img src="DSC08874.JPG" alt="Wide stage" style="object-position:center 40%;">
+      <div class="img-cap">Stage wide · Satinder Sartaj 2026</div>
+    </div>
+    <div class="img-card right">
+      <img src="DSC08704.JPG" alt="Performer at mic" style="object-position:center top;">
+      <div class="img-cap">Performer at mic</div>
+    </div>
+  </div>
+  <!-- 2 more DSC photos -->
+  <div class="row-pair reveal rd1">
+    <div class="img-card">
+      <img src="DSC08999.JPG" alt="Guitarist" style="object-position:center top;">
+      <div class="img-cap">Guitarist · Live</div>
+    </div>
+    <div class="img-card">
+      <img src="DSC08982.JPG" alt="Piano player" style="object-position:center center;">
+      <div class="img-cap">Piano player · Live</div>
+    </div>
+  </div>
+</div>
+
+<!-- Abhidaan -->
+<div class="sub-sec reveal">
+  <span class="sub-sec-label">2026 — Abhidaan</span>
+  <h3 class="sub-sec-title">Abhidaan</h3>
+</div>
+<div class="gal-wrap">
+  <div class="row-land-port reveal">
+    <div class="img-card left">
+      <img src="IMG_8974.JPG" alt="Abhidaan performer" style="object-position:center center; object-fit:contain; background:#111110;">
+      <div class="img-cap">2026 — Abhidaan</div>
+    </div>
+    <div class="img-card right">
+      <img src="IMG_8947.JPG" alt="Abhidaan close" style="object-position:center top;">
+      <div class="img-cap">2026 — Abhidaan</div>
+    </div>
+  </div>
+</div>
+
+<!-- Janshit Joshi -->
+<div class="sub-sec reveal">
+  <span class="sub-sec-label">2026 — Janshit Joshi</span>
+  <h3 class="sub-sec-title">Janshit Joshi</h3>
+</div>
+<div class="gal-wrap" style="padding-bottom:5rem;">
+  <div class="row-land-port reveal">
+    <div class="img-card left">
+      <img src="IMG_9154.JPG" alt="Janshit Joshi" style="object-position:center center;">
+      <div class="img-cap">Janshit Joshi · 2026</div>
+    </div>
+    <div class="img-card right">
+      <img src="IMG_9312.JPG" alt="Janshit Joshi portrait" style="object-position:center center;">
+      <div class="img-cap">Janshit Joshi · Portrait</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== STREET STORIES ===================== -->
+<div class="sec-label reveal" id="street">
+  <div class="sec-label-left">
+    <span class="sec-num">03 — Work</span>
+    <h2 class="sec-title">Stories<br>from the <em>Street</em></h2>
+  </div>
+  <div class="sec-year">Ahmedabad Streets · 2025–2026</div>
+</div>
+
+<div class="gal-wrap">
+  <!-- trio -->
+  <div class="row-trio reveal">
+    <div class="img-card">
+      <img src="1.JPG" alt="Morning sweep" style="object-position:center center; transform:rotate(90deg); transform-origin:center center; width:100%; height:100%; object-fit:cover;">
+      <div class="img-cap">Morning sweep · Ahmedabad</div>
+    </div>
+    <div class="img-card">
+      <img src="IMG_2190.JPG" alt="Book stall" style="object-position:center center;">
+      <div class="img-cap">Book stall · Market</div>
+    </div>
+    <div class="img-card">
+      <img src="IMG_2209.JPG" alt="Street scene" style="object-position:center center;">
+      <div class="img-cap">Street scene · Ahmedabad</div>
+    </div>
+  </div>
+</div>
+
+<!-- bonfire full-bleed banner -->
+<div class="cinematic-banner reveal" style="margin: 5px 0;">
+  <img src="IMG_8665.JPG" alt="Night bonfire · Ahmedabad streets" style="object-position:center 60%;">
+  <div class="cinematic-cap">Night bonfire · Ahmedabad</div>
+</div>
+
+<div class="gal-wrap">
+  <!-- pair -->
+  <div class="row-pair reveal" style="padding-bottom:5rem;">
+    <div class="img-card">
+      <img src="IMG_2308.JPG" alt="Street life" style="object-position:center center;">
+      <div class="img-cap">Street life · Ahmedabad</div>
+    </div>
+    <div class="img-card">
+      <img src="IMG_2317.JPG" alt="City moment" style="object-position:center center;">
+      <div class="img-cap">City moment · Ahmedabad</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== STREET PORTRAITS ===================== -->
+<div class="sec-label reveal" id="portraits">
+  <div class="sec-label-left">
+    <span class="sec-num">04 — Work</span>
+    <h2 class="sec-title">Street<br><em>Portraits</em></h2>
+  </div>
+  <div class="sec-year">People of Ahmedabad</div>
+</div>
+
+<div class="gal-wrap" style="padding-bottom:5rem;">
+  <!-- hero: 2 col portrait -->
+  <div class="row-pair reveal">
+    <div class="img-card">
+      <img src="DSC08727.JPG" alt="Concert silhouette · portrait" style="object-position:center center;">
+      <div class="img-cap">In the crowd · Live</div>
+    </div>
+    <div class="img-card">
+      <img src="IMG_2278.JPG" alt="Street portrait" style="object-position:center top;">
+      <div class="img-cap">Street portrait · Ahmedabad</div>
+    </div>
+  </div>
+  <!-- bottom pair -->
+  <div class="row-pair reveal rd1">
+    <div class="img-card">
+      <img src="IMG_2125.JPG" alt="Elder portrait" style="object-position:center top;">
+      <div class="img-cap">Elder · Ahmedabad</div>
+    </div>
+    <div class="img-card">
+      <img src="IMG_2303.JPG" alt="Curious eyes" style="object-position:center top;">
+      <div class="img-cap">Curious eyes · Ahmedabad</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== CONTACT ===================== -->
+<div class="contact-wrap reveal" id="contact">
+  <div class="contact-heading-block">
+    <span class="sec-num">05 — Contact</span>
+    <h2 class="sec-title" style="margin-bottom:0;">Let's create<br>something <em>real</em></h2>
+    <div class="contact-links">
+      <a href="mailto:Aaryankewalia000@gmail.com" class="c-link">
+        <span class="cl-meta">
+          <div class="cl-lbl">Email</div>
+          <div class="cl-val">Aaryankewalia000@gmail.com</div>
+        </span>
+        <span class="cl-arr">→</span>
+      </a>
+      <a href="tel:+919265005998" class="c-link">
+        <span class="cl-meta">
+          <div class="cl-lbl">Phone</div>
+          <div class="cl-val">+91 92650 05998</div>
+        </span>
+        <span class="cl-arr">→</span>
+      </a>
+      <a href="https://instagram.com/aaryann.n__" target="_blank" class="c-link">
+        <span class="cl-meta">
+          <div class="cl-lbl">Instagram</div>
+          <div class="cl-val">@aaryann.n__</div>
+        </span>
+        <span class="cl-arr">→</span>
+      </a>
+    </div>
+  </div>
+  <div>
+    <div class="contact-big">Let's<br><span>Talk</span></div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <p>© 2026 Aaryan Kewalia</p>
+  <p>Visual Storyteller · Ahmedabad, India</p>
+  <p>No filters. No edits.</p>
+</footer>
+
+<script>
+  // Cursor
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursor-ring');
+  let mx = 0, my = 0, rx = 0, ry = 0;
+  document.addEventListener('mousemove', e => {
+    mx = e.clientX; my = e.clientY;
+    cursor.style.left = mx + 'px';
+    cursor.style.top = my + 'px';
+  });
+  (function animRing() {
+    rx += (mx - rx) * .12;
+    ry += (my - ry) * .12;
+    ring.style.left = rx + 'px';
+    ring.style.top = ry + 'px';
+    requestAnimationFrame(animRing);
+  })();
+  document.querySelectorAll('a, .img-card, .c-link').forEach(el => {
+    el.addEventListener('mouseenter', () => { cursor.style.width = '5px'; cursor.style.height = '5px'; ring.style.width = '56px'; ring.style.height = '56px'; });
+    el.addEventListener('mouseleave', () => { cursor.style.width = '8px'; cursor.style.height = '8px'; ring.style.width = '32px'; ring.style.height = '32px'; });
+  });
+
+  // Scroll reveal
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.08, rootMargin: '0px 0px -50px 0px' });
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+  // Nav
+  const nav = document.querySelector('nav');
+  window.addEventListener('scroll', () => {
+    nav.style.background = window.scrollY > 80
+      ? 'rgba(8,8,6,0.97)'
+      : 'linear-gradient(to bottom,rgba(8,8,6,.95),transparent)';
+  });
+</script>
+</body>
+</html>
